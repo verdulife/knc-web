@@ -1,0 +1,90 @@
+---
+interface Props {
+  title: string;
+  thumbnail: string;
+  links: {
+    youtube: string;
+    spotify: string | null;
+  };
+  season?: number;
+  episode?: number;
+}
+
+const { title, thumbnail, links, season, episode } = Astro.props;
+---
+
+<div
+  class="group relative block overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 transition-all duration-300 hover:border-red-600/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)]"
+>
+  <div class="aspect-video overflow-hidden">
+    <img
+      src={thumbnail}
+      alt={title}
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+    />
+    <div
+      class="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-60 transition-opacity group-hover:opacity-80"
+    >
+    </div>
+  </div>
+
+  <div class="absolute bottom-0 left-0 right-0 p-4">
+    {
+      season && episode && (
+        <span class="mb-1 block text-[10px] font-bold uppercase tracking-widest text-red-500">
+          Temporada {season} • Episodio {episode}
+        </span>
+      )
+    }
+    <h3
+      class="text-sm font-semibold text-neutral-100 line-clamp-2 leading-tight group-hover:text-white transition-colors"
+    >
+      {title}
+    </h3>
+
+    {/* Links Overlay */}
+    <div
+      class="mt-4 flex gap-3 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0"
+    >
+      <a
+        href={links.youtube}
+        target="_blank"
+        class="flex items-center gap-2 bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-red-700 transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"
+          ></path>
+        </svg>
+        YouTube
+      </a>
+
+      {
+        links.spotify && (
+          <a
+            href={links.spotify}
+            target="_blank"
+            class="flex items-center gap-2 bg-[#1DB954] text-white text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-[#1ed760] transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.59 17.357c-.223.366-.7.48-1.066.257-2.822-1.724-6.375-2.114-10.563-1.159-.413.095-.826-.164-.92-.577-.095-.413.164-.827.577-.921 4.58-1.047 8.498-.598 11.655 1.332.366.223.48.7.257 1.066zm1.493-3.264c-.28.456-.879.605-1.334.325-3.229-1.983-8.151-2.557-11.97-1.397-.514.157-1.055-.133-1.213-.647-.158-.513.132-1.055.646-1.213 4.364-1.324 9.803-.679 13.562 1.631.454.28.604.878.324 1.333zm.133-3.375c-3.873-2.3-10.272-2.512-13.994-1.383-.594.18-1.222-.158-1.403-.752-.181-.595.158-1.222.752-1.403 4.275-1.299 11.338-1.043 15.805 1.609.534.317.709 1.004.392 1.538-.317.533-1.005.71-1.538.391z" />
+            </svg>
+            Spotify
+          </a>
+        )
+      }
+    </div>
+  </div>
+</div>

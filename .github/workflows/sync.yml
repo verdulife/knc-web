@@ -1,0 +1,47 @@
+name: Sync Latest Episode
+# Actualizado para forzar visibilidad en GitHub Actions
+
+on:
+  schedule:
+    # Lunes a las 20:01 horario España (19:01 UTC)
+    - cron: "1 19 * * 1"
+  workflow_dispatch: # Permite ejecución manual para probar
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Necesario para hacer commit y push
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run sync script
+        run: bun run sync
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/episodes/
+          if git diff --staged --quiet; then
+            echo "No hay nuevos episodios para sincronizar."
+          else
+            git commit -m "chore: sincronización automática de nuevo episodio"
+            git push
+            echo "Triggering Vercel Deploy Hook..."
+            curl -sS -X POST "https://api.vercel.com/v1/integrations/deploy/prj_arCETw7mOODxg0Jc1jitYkBinrC6/HPcQgP7hL9" || echo "Warning: Vercel hook trigger failed."
+          fi

@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import EpisodeCard from "./EpisodeCard.astro";
+
+// Cargamos la colección de episodios
+const allEpisodes = await getCollection("episodes");
+
+// Procesamos y ordenamos
+const episodes = allEpisodes
+  .map((entry: any) => ({
+    ...entry.data,
+  }))
+  .sort((a: any, b: any) => {
+    if (b.season !== a.season) return b.season - a.season;
+    return b.episode - a.episode;
+  });
+
+console.log(
+  `[DEBUG] Loaded ${episodes.length} episodes:`,
+  episodes.map((e) => `${e.season}x${e.episode}: ${e.title}`),
+);
+---
+
+<div
+  class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+>
+  {
+    episodes.map((ep: any) => (
+      <EpisodeCard
+        title={ep.title}
+        thumbnail={ep.thumbnail}
+        links={ep.links}
+        season={ep.season}
+        episode={ep.episode}
+      />
+    ))
+  }
+</div>
+
+{
+  !episodes.length && (
+    <p class="text-center text-neutral-500 py-12 italic">
+      Próximamente más episodios...
+    </p>
+  )
+}
